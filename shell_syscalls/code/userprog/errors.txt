@@ -1,0 +1,6 @@
+make[1]: Entering directory '/cs/student/aperturescience/CURRENTCS/cs170/CS170/project2/code/userprog'
+building dependencies
+make[1]: Leaving directory '/cs/student/aperturescience/CURRENTCS/cs170/CS170/project2/code/userprog'
+make[1]: Entering directory '/cs/student/aperturescience/CURRENTCS/cs170/CS170/project2/code/userprog'
+../userprog/exception.cc
+make[1]: Leaving directory '/cs/student/aperturescience/CURRENTCS/cs170/CS170/project2/code/userprog'

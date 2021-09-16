@@ -1,0 +1,75 @@
+Group members:
+Hank Lewis
+Ziliang (Wells) Zeng
+Austin Loza
+
+Work Description:
+Hank implemented condition variables.
+Wells implemented rwlocks. Austin implemented
+locks as well as wrote the project report.
+
+Design Explanation:
+
+rwlock.cc and rwlock.h
+These files were modified to use NachOS primitives
+instead of pthreads
+
+synch.cc and synch.h
+We implemented locks and condition variables in here
+and then added them to hashchain. 
+
+Locks:
+When locks are constructed, all values are initialized.
+
+The lock destructor destroys the queue once it's no longer
+needed.
+
+When Acquire is called, interrupts are shut off, and then
+the owner of the thread is checked. If it isn't the current
+thread and the lock is unlocked, the owner becomes the current thread
+and the lock is locked. If it is currently locked, the current thread
+is added to a waiting queue and put to sleep. Interrupts are then reset.
+
+When Release is called, interrupts are shut off and a thread pointer is 
+initialized. If the current thread doesn't own the lock, it can't release.
+If it does and the queue is empty, the lock becomes unowned and the lock is
+released. If it does and the queue has some other thread in it, the next thread
+in line gets sent to the scheduler and the owner becomes that thread. After that,
+interrupts are reset.
+
+isHeldByCurrentThread checks if the owner is the current thread, if it is,
+it returns 1, otherwise it returns 0.
+
+Conditions:
+The condition constructor initializes all of its internal variables.
+
+The condition destructor destroys the queue once it is no longer 
+needed.
+
+When Wait is called with a condition lock pointer, interrupts are stopped.
+The function then checks if the pointer is null, then an error is returned.
+If the condition's internal lock is null, then the lock becomes the condition
+lock that was passed into this function. If the lock isn't the condition lock
+passed into this function, then an error is returned. After the checks are done,
+the current thread is then added to the queue and the condition lock is released,
+the thread is put to sleep, and the condition lock is acquired. Interrupts
+are then reset.
+
+When Signal is called with a condition lock pointer, first, interrupts are
+stopped. Then a thread pointer is initialized. The function then checks if 
+the queue is empty. If it is, then interrupts are allowed and the function
+returns. If the queue isn't empty and is not the internal stored lock, then 
+an error is returned. Otherwise, a thread is removed from the queue and if 
+it's not NULL, then it gets scheduled to run. If the queue is empty, then 
+the internal lock is set to NULL and interrupts are set to their previous state.
+
+When Broadcast is called with a condition pointer variable, while the queue isn't
+empty, Signal is called on the condition lock.
+
+
+Compilation Instructions:
+Open a terminal in the project1b threads directory and then 
+type 'make'
+
+Functionality:
+Everything works, it passes all tests locally.

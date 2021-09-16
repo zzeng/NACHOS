@@ -1,0 +1,63 @@
+Group members:
+Hank Lewis
+Ziliang (Wells) Zeng
+Austin Loza
+
+Work Description:
+The work of implementation and debugging was split pretty 
+evenly amongst the three of us. Hank implemented startRead
+and startWrite. Wells implemented the constructor and the necessary 
+bugfixes due to the gradescope script changes. Austin implemented
+doneRead and doneWrite as well as wrote the project report.
+
+
+Design Explanation:
+rwlock.cc:
+Implemented startRead by adding a lock when the function is 
+called, which waits after the reader adds itself to the waiting
+list, though only if there are active writers and waiting writers. 
+When the wait is over, it removes itself from the waitlist
+and becomes active reader and then removes the lock.
+
+Implemented doneRead by adding a lock when the function is 
+called. It then removes itself from the active reader list
+and if it was the last active reader, it will signal that 
+it is okay to write. It then unlocks.
+
+Implemented startWrite by adding a lock when the function is 
+called and if there are any active writers or readers, then 
+the function adds itself to the waiting list and waits until
+it receives an okToWrite signal. Once it is okay to write, 
+the function will remove itself from the waiting list, make
+itself active writer and then unlock.
+
+Implemented doneWrite by adding a lock when the function is
+called. It then removes itself from being the active writer
+and if there are waiting writers, it signals that it is ok
+to write. If there are only waiting readers, then it will 
+signal that it is okay to read. It then unlocks.
+
+rwlock.h:
+Added some private class variables to this file.
+Ints:
+AW - Active writer - This is the number of active writers
+			(can't be more than 1 at a time)
+AR - Active reader - This is the number of active readers 
+			(can have more than one)
+WW - Waiting writer - The number of writers waiting to write
+WR - Waiting reader - The number of readers waiting to read
+
+hashchain.cc:
+Added code to the definitions of START_READ(), START_WRITE(),
+END_READ(), and END_WRITE(). The definitions were linked to 
+the corresponding functions in rwlock.h
+
+hashchain.h:
+Provided code for fine-grain and coarse mutex and rwlock
+flags. Instantiates either an array of rwlocks (fine)
+or a singular rwlock (coarse) as well as an array of 
+mutex locks (fine) or a singular lock (coarse).
+
+Compilation Instructions:
+Open a terminal in the project1a directory and then 
+type 'make'
